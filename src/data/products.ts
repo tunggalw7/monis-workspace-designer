@@ -12,6 +12,7 @@ export const products: Product[] = [
     dimensions: "120 × 60 × 75 cm",
     highlights: ["Solid teak-finish top", "Fits up to 2 monitors"],
     preview: { slot: "desk", zIndex: 10, maxQty: 1, width: 120, height: 75 },
+    capacity: { monitor: 2 },
   },
   {
     id: "desk-standing",
@@ -21,8 +22,9 @@ export const products: Product[] = [
     pricePerMonth: 650_000,
     image: "/items/desk-standing.svg",
     dimensions: "140 × 70 × 72–120 cm",
-    highlights: ["Dual motor, 3 memory presets", "Shown at standing height"],
+    highlights: ["Dual motor, 3 memory presets", "Fits up to 2 monitors"],
     preview: { slot: "desk", zIndex: 10, maxQty: 1, width: 140, height: 105 },
+    capacity: { monitor: 2 },
   },
   {
     id: "desk-l-shaped",
@@ -34,6 +36,7 @@ export const products: Product[] = [
     dimensions: "160 × 120 × 75 cm",
     highlights: ["Room for 3 monitors", "Side return for documents"],
     preview: { slot: "desk", zIndex: 10, maxQty: 1, width: 160, height: 75 },
+    capacity: { monitor: 3 },
   },
 
   // Chairs

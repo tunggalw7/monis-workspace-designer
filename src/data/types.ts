@@ -27,4 +27,6 @@ export type Product = {
   dimensions: string;
   highlights: string[];
   preview: PreviewMeta;
+  /** Desks only: how many items of a slot fit on this desk (overrides maxQty when lower). */
+  capacity?: Partial<Record<Slot, number>>;
 };
