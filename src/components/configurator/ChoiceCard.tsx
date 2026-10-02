@@ -1,4 +1,7 @@
+"use client";
+
 import type { Product } from "@/data/types";
+import { useUI } from "@/store/ui";
 import { Price } from "./Price";
 import { ProductDetails } from "./ProductDetails";
 import { ProductImage } from "./ProductImage";
@@ -12,8 +15,13 @@ type Props = {
 
 /** Single-choice card (desk or chair) backed by a native radio for keyboard support. */
 export function ChoiceCard({ product, name, checked, onSelect }: Props) {
+  const highlighted = useUI((s) => s.highlightId === product.id);
+
   return (
-    <div className="relative flex min-w-0 flex-col gap-2 rounded-2xl border-2 border-border bg-surface p-3 transition hover:border-terracotta/50 has-checked:border-terracotta has-checked:bg-sand/40 has-focus-visible:ring-2 has-focus-visible:ring-ocean has-focus-visible:ring-offset-2">
+    <div
+      id={`card-${product.id}`}
+      className={`${highlighted ? "ring-4 ring-ocean/50" : ""} relative flex min-w-0 flex-col gap-2 rounded-2xl border-2 border-border bg-surface p-3 transition hover:border-terracotta/50 has-checked:border-terracotta has-checked:bg-sand/40 has-focus-visible:ring-2 has-focus-visible:ring-ocean has-focus-visible:ring-offset-2`}
+    >
       <label className="flex cursor-pointer flex-col gap-2">
         <input
           type="radio"

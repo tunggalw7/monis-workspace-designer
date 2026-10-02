@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, type KeyboardEvent } from "react";
+import { useEffect, useRef, type KeyboardEvent } from "react";
 import { getProductsByCategory } from "@/data/products";
 import { formatIDR } from "@/lib/format";
 import { useSetup, useTotals } from "@/store/setup";
@@ -28,6 +28,31 @@ export function Configurator() {
   const selectChair = useSetup((s) => s.selectChair);
   const { monthly } = useTotals();
   const tabRefs = useRef<(HTMLButtonElement | null)[]>([]);
+  const revealCount = useUI((s) => s.revealCount);
+  const clearHighlight = useUI((s) => s.clearHighlight);
+
+  // The preview asked to show a tab or product: scroll to it and move focus there.
+  useEffect(() => {
+    if (!revealCount) return;
+    const { activeTab, highlightId } = useUI.getState();
+    // Wait a frame so the newly selected panel is visible.
+    const frame = requestAnimationFrame(() => {
+      const target =
+        (highlightId && document.getElementById(`card-${highlightId}`)) ||
+        document.getElementById(`panel-${activeTab}`);
+      if (!target) return;
+      target.scrollIntoView({ behavior: "smooth", block: "nearest" });
+      const focusable =
+        target.querySelector<HTMLElement>("input:checked") ??
+        target.querySelector<HTMLElement>("input, button");
+      focusable?.focus({ preventScroll: true });
+    });
+    const timer = setTimeout(clearHighlight, 1600);
+    return () => {
+      cancelAnimationFrame(frame);
+      clearTimeout(timer);
+    };
+  }, [revealCount, clearHighlight]);
 
   const badges: Record<ConfiguratorTab, string | null> = {
     desk: deskId ? "✓" : null,
@@ -52,7 +77,7 @@ export function Configurator() {
   return (
     <section
       aria-label="Configure your workspace"
-      className="flex min-w-0 flex-col gap-4 rounded-3xl border border-border bg-surface p-4 shadow-sm lg:sticky lg:top-6"
+      className="flex min-w-0 flex-col gap-4 rounded-3xl border border-border bg-surface p-4 shadow-sm"
     >
       <div
         role="tablist"

@@ -1,4 +1,5 @@
 import { Configurator } from "@/components/configurator/Configurator";
+import { WorkspacePreview } from "@/components/preview/WorkspacePreview";
 
 export default function Home() {
   return (
@@ -13,13 +14,7 @@ export default function Home() {
       </header>
 
       <main className="grid flex-1 grid-cols-1 items-start gap-6 lg:grid-cols-[minmax(0,1fr)_440px]">
-        {/* Live preview lands here in #5. */}
-        <section
-          aria-label="Workspace preview"
-          className="grid min-h-72 place-items-center self-stretch rounded-3xl bg-sand/60 p-6 text-center text-muted"
-        >
-          Your workspace preview
-        </section>
+        <WorkspacePreview />
         <Configurator />
       </main>
     </div>

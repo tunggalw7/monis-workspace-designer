@@ -4,6 +4,7 @@ import type { Product } from "@/data/types";
 import { getProduct } from "@/data/products";
 import { maxQtyFor } from "@/lib/setup";
 import { useSetup } from "@/store/setup";
+import { useUI } from "@/store/ui";
 import { Price } from "./Price";
 import { ProductDetails } from "./ProductDetails";
 import { ProductImage } from "./ProductImage";
@@ -16,14 +17,16 @@ export function AccessoryCard({ product }: { product: Product }) {
   const qty = useSetup((s) => s.accessories.find((l) => l.id === product.id)?.qty ?? 0);
   const deskId = useSetup((s) => s.deskId);
   const setQty = useSetup((s) => s.setQty);
+  const highlighted = useUI((s) => s.highlightId === product.id);
   const max = maxQtyFor(product.id, deskId);
   const limitedByDesk = max < product.preview.maxQty;
 
   return (
     <div
+      id={`card-${product.id}`}
       className={`relative flex min-w-0 flex-col gap-2 rounded-2xl border-2 bg-surface p-3 transition ${
         qty > 0 ? "border-terracotta bg-sand/40" : "border-border hover:border-terracotta/50"
-      }`}
+      } ${highlighted ? "ring-4 ring-ocean/50" : ""}`}
     >
       <ProductImage product={product} />
       <span className="leading-tight font-semibold">{product.name}</span>
