@@ -1,0 +1,158 @@
+"use client";
+
+import { useRef, type KeyboardEvent } from "react";
+import { getProductsByCategory } from "@/data/products";
+import { formatIDR } from "@/lib/format";
+import { useSetup, useTotals } from "@/store/setup";
+import { useUI, type ConfiguratorTab } from "@/store/ui";
+import { AccessoryCard } from "./AccessoryCard";
+import { ChoiceCard } from "./ChoiceCard";
+
+const TABS: { id: ConfiguratorTab; label: string }[] = [
+  { id: "desk", label: "Desks" },
+  { id: "chair", label: "Chairs" },
+  { id: "accessory", label: "Accessories" },
+];
+
+const desks = getProductsByCategory("desk");
+const chairs = getProductsByCategory("chair");
+const accessories = getProductsByCategory("accessory");
+
+export function Configurator() {
+  const activeTab = useUI((s) => s.activeTab);
+  const setActiveTab = useUI((s) => s.setActiveTab);
+  const deskId = useSetup((s) => s.deskId);
+  const chairId = useSetup((s) => s.chairId);
+  const accessoryCount = useSetup((s) => s.accessories.reduce((n, l) => n + l.qty, 0));
+  const selectDesk = useSetup((s) => s.selectDesk);
+  const selectChair = useSetup((s) => s.selectChair);
+  const { monthly } = useTotals();
+  const tabRefs = useRef<(HTMLButtonElement | null)[]>([]);
+
+  const badges: Record<ConfiguratorTab, string | null> = {
+    desk: deskId ? "✓" : null,
+    chair: chairId ? "✓" : null,
+    accessory: accessoryCount ? String(accessoryCount) : null,
+  };
+
+  function onTabKeyDown(e: KeyboardEvent, index: number) {
+    const last = TABS.length - 1;
+    const next = {
+      ArrowRight: index === last ? 0 : index + 1,
+      ArrowLeft: index === 0 ? last : index - 1,
+      Home: 0,
+      End: last,
+    }[e.key];
+    if (next === undefined) return;
+    e.preventDefault();
+    setActiveTab(TABS[next].id);
+    tabRefs.current[next]?.focus();
+  }
+
+  return (
+    <section
+      aria-label="Configure your workspace"
+      className="flex min-w-0 flex-col gap-4 rounded-3xl border border-border bg-surface p-4 shadow-sm lg:sticky lg:top-6"
+    >
+      <div
+        role="tablist"
+        aria-label="Product categories"
+        className="flex gap-1 rounded-full bg-sand p-1"
+      >
+        {TABS.map((tab, i) => {
+          const selected = activeTab === tab.id;
+          return (
+            <button
+              key={tab.id}
+              ref={(el) => {
+                tabRefs.current[i] = el;
+              }}
+              type="button"
+              role="tab"
+              id={`tab-${tab.id}`}
+              aria-selected={selected}
+              aria-controls={`panel-${tab.id}`}
+              tabIndex={selected ? 0 : -1}
+              onClick={() => setActiveTab(tab.id)}
+              onKeyDown={(e) => onTabKeyDown(e, i)}
+              className={`flex flex-1 items-center justify-center gap-1.5 rounded-full px-3 py-2 text-sm font-semibold transition focus-visible:ring-2 focus-visible:ring-ocean focus-visible:outline-none ${
+                selected
+                  ? "bg-surface text-foreground shadow-sm"
+                  : "text-muted hover:text-foreground"
+              }`}
+            >
+              {tab.label}
+              {badges[tab.id] && (
+                <span className="grid min-w-5 place-items-center rounded-full bg-jungle px-1 text-[11px] text-white">
+                  {badges[tab.id]}
+                  <span className="sr-only">{tab.id === "accessory" ? " added" : " selected"}</span>
+                </span>
+              )}
+            </button>
+          );
+        })}
+      </div>
+
+      <div role="tabpanel" id="panel-desk" aria-labelledby="tab-desk" hidden={activeTab !== "desk"}>
+        <fieldset>
+          <legend className="mb-3 text-sm text-muted">Pick one desk</legend>
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+            {desks.map((p) => (
+              <ChoiceCard
+                key={p.id}
+                product={p}
+                name="desk"
+                checked={deskId === p.id}
+                onSelect={() => selectDesk(p.id)}
+              />
+            ))}
+          </div>
+        </fieldset>
+      </div>
+
+      <div
+        role="tabpanel"
+        id="panel-chair"
+        aria-labelledby="tab-chair"
+        hidden={activeTab !== "chair"}
+      >
+        <fieldset>
+          <legend className="mb-3 text-sm text-muted">Pick one chair</legend>
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+            {chairs.map((p) => (
+              <ChoiceCard
+                key={p.id}
+                product={p}
+                name="chair"
+                checked={chairId === p.id}
+                onSelect={() => selectChair(p.id)}
+              />
+            ))}
+          </div>
+        </fieldset>
+      </div>
+
+      <div
+        role="tabpanel"
+        id="panel-accessory"
+        aria-labelledby="tab-accessory"
+        hidden={activeTab !== "accessory"}
+      >
+        <p className="mb-3 text-sm text-muted">Add as many as you like</p>
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+          {accessories.map((p) => (
+            <AccessoryCard key={p.id} product={p} />
+          ))}
+        </div>
+      </div>
+
+      <div className="flex items-baseline justify-between border-t border-border pt-3">
+        <span className="text-sm text-muted">Monthly total</span>
+        <span aria-live="polite" className="font-display text-xl font-semibold">
+          {formatIDR(monthly)}
+          <span className="font-sans text-sm font-normal text-muted">/mo</span>
+        </span>
+      </div>
+    </section>
+  );
+}
