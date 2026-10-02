@@ -1,8 +1,9 @@
 "use client";
 
 import { useEffect, useRef, type KeyboardEvent } from "react";
-import { getProductsByCategory } from "@/data/products";
+import { getProduct, getProductsByCategory } from "@/data/products";
 import { useSetup } from "@/store/setup";
+import { useToast } from "@/store/toast";
 import { useUI, type ConfiguratorTab } from "@/store/ui";
 import { AccessoryCard } from "./AccessoryCard";
 import { ChoiceCard } from "./ChoiceCard";
@@ -54,6 +55,24 @@ export function Configurator() {
     };
   }, [revealCount, clearHighlight]);
 
+  // A smaller desk can drop monitors; say so and offer undo.
+  function chooseDesk(id: string) {
+    const { deskId, chairId, accessories, rentalMonths, applySetup } = useSetup.getState();
+    const before = { deskId, chairId, accessories, rentalMonths };
+    const count = (lines: typeof accessories) => lines.find((l) => l.id === "monitor")?.qty ?? 0;
+    selectDesk(id);
+    const removed = count(accessories) - count(useSetup.getState().accessories);
+    if (removed > 0) {
+      const kept = count(useSetup.getState().accessories);
+      useToast
+        .getState()
+        .show(`Only ${kept} monitors fit on the ${getProduct(id)?.name} — removed ${removed}.`, {
+          label: "Undo",
+          run: () => applySetup(before),
+        });
+    }
+  }
+
   const badges: Record<ConfiguratorTab, string | null> = {
     desk: deskId ? "✓" : null,
     chair: chairId ? "✓" : null,
@@ -77,7 +96,7 @@ export function Configurator() {
   return (
     <section
       aria-label="Configure your workspace"
-      className="flex min-w-0 flex-col gap-4 rounded-3xl border border-border bg-surface p-4 shadow-sm"
+      className="@container flex min-w-0 flex-col gap-4 rounded-3xl border border-border bg-surface p-4 shadow-sm"
     >
       <div
         role="tablist"
@@ -121,14 +140,14 @@ export function Configurator() {
       <div role="tabpanel" id="panel-desk" aria-labelledby="tab-desk" hidden={activeTab !== "desk"}>
         <fieldset>
           <legend className="mb-3 text-sm text-muted">Pick one desk</legend>
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+          <div className="grid grid-cols-2 gap-3 @sm:grid-cols-3">
             {desks.map((p) => (
               <ChoiceCard
                 key={p.id}
                 product={p}
                 name="desk"
                 checked={deskId === p.id}
-                onSelect={() => selectDesk(p.id)}
+                onSelect={() => chooseDesk(p.id)}
               />
             ))}
           </div>
@@ -143,7 +162,7 @@ export function Configurator() {
       >
         <fieldset>
           <legend className="mb-3 text-sm text-muted">Pick one chair</legend>
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+          <div className="grid grid-cols-2 gap-3 @sm:grid-cols-3">
             {chairs.map((p) => (
               <ChoiceCard
                 key={p.id}
@@ -164,7 +183,7 @@ export function Configurator() {
         hidden={activeTab !== "accessory"}
       >
         <p className="mb-3 text-sm text-muted">Add as many as you like</p>
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+        <div className="grid grid-cols-2 gap-3 @sm:grid-cols-3">
           {accessories.map((p) => (
             <AccessoryCard key={p.id} product={p} />
           ))}

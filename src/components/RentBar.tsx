@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { formatIDR } from "@/lib/format";
+import { AnimatedPrice } from "@/components/AnimatedPrice";
 import { isComplete } from "@/lib/setup";
 import { useSetup, useTotals } from "@/store/setup";
 import { useUI } from "@/store/ui";
@@ -27,7 +27,7 @@ export function RentBar() {
             {complete ? "Ready to rent?" : `Pick ${missing} to rent your setup`}
           </p>
           <p aria-live="polite" className="font-display text-lg font-semibold sm:text-2xl">
-            {hydrated ? formatIDR(monthly) : "—"}
+            {hydrated ? <AnimatedPrice amount={monthly} /> : "—"}
             <span className="font-sans text-sm font-normal text-muted">/mo</span>
           </p>
         </div>

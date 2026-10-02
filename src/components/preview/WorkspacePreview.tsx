@@ -43,7 +43,7 @@ export function WorkspacePreview() {
     <MotionConfig reducedMotion="user">
       <section
         aria-label="Workspace preview"
-        className="relative overflow-hidden rounded-3xl bg-gradient-to-b from-[#f8eddc] to-sand p-3 sm:p-6 lg:sticky lg:top-6"
+        className="relative overflow-hidden rounded-3xl bg-gradient-to-b from-[#f8eddc] to-sand p-3 sm:p-6 md:sticky md:top-6"
       >
         <div
           className="relative mx-auto w-full max-w-3xl"

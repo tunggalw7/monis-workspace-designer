@@ -2,10 +2,11 @@
 
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { AnimatedPrice } from "@/components/AnimatedPrice";
 import { SetupThumbnail } from "@/components/preview/SetupThumbnail";
 import type { Product } from "@/data/types";
 import { formatIDR } from "@/lib/format";
-import { useLineItems, useSetup, useTotals } from "@/store/setup";
+import { useLineItems, useSetup, useTotals, withUndo } from "@/store/setup";
 import { useUI, type ConfiguratorTab } from "@/store/ui";
 import { DurationPicker } from "./DurationPicker";
 
@@ -25,9 +26,11 @@ export function OrderSummary() {
   }
 
   function remove(product: Product) {
-    if (product.category === "desk") setup.selectDesk(null);
-    else if (product.category === "chair") setup.selectChair(null);
-    else setup.removeAccessory(product.id);
+    withUndo(() => {
+      if (product.category === "desk") setup.selectDesk(null);
+      else if (product.category === "chair") setup.selectChair(null);
+      else setup.removeAccessory(product.id);
+    }, `${product.name} removed`);
   }
 
   return (
@@ -102,7 +105,7 @@ export function OrderSummary() {
         <div className="mt-2 flex items-baseline justify-between">
           <dt className="font-semibold">Total</dt>
           <dd aria-live="polite" className="font-display text-2xl font-semibold">
-            {formatIDR(total)}
+            <AnimatedPrice amount={total} />
           </dd>
         </div>
       </dl>

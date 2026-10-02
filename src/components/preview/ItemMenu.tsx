@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { useSetup } from "@/store/setup";
+import { useSetup, withUndo } from "@/store/setup";
 import { useUI } from "@/store/ui";
 import { STAGE, type PlacedItem } from "./layout";
 
@@ -40,9 +40,11 @@ export function ItemMenu({ item, onClose }: Props) {
   const tab = isAccessory ? "accessory" : (product.category as "desk" | "chair");
 
   function remove() {
-    if (product.category === "desk") selectDesk(null);
-    else if (product.category === "chair") selectChair(null);
-    else setQty(product.id, qty - 1);
+    withUndo(() => {
+      if (product.category === "desk") selectDesk(null);
+      else if (product.category === "chair") selectChair(null);
+      else setQty(product.id, qty - 1);
+    }, `${product.name} removed`);
     onClose(false);
   }
 

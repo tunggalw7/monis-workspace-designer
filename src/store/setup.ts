@@ -11,6 +11,7 @@ import {
   type RentalMonths,
   type Setup,
 } from "@/lib/setup";
+import { useToast } from "./toast";
 
 type SetupActions = {
   selectDesk: (id: string | null) => void;
@@ -105,4 +106,12 @@ export function useTotals() {
   const rentalMonths = useSetup((s) => s.rentalMonths);
   const monthly = lineItems.reduce((sum, l) => sum + l.monthly, 0);
   return { monthly, rentalMonths, total: monthly * rentalMonths };
+}
+
+/** Runs a change and shows a toast that can undo it. */
+export function withUndo(change: () => void, message: string) {
+  const { deskId, chairId, accessories, rentalMonths, applySetup } = useSetup.getState();
+  const before = { deskId, chairId, accessories, rentalMonths };
+  change();
+  useToast.getState().show(message, { label: "Undo", run: () => applySetup(before) });
 }

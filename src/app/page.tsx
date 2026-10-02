@@ -1,5 +1,6 @@
 import { Configurator } from "@/components/configurator/Configurator";
 import { WorkspacePreview } from "@/components/preview/WorkspacePreview";
+import { PresetBar } from "@/components/PresetBar";
 import { RentBar } from "@/components/RentBar";
 
 export default function Home() {
@@ -12,9 +13,12 @@ export default function Home() {
         <h1 className="font-display text-3xl font-semibold tracking-tight sm:text-4xl">
           Design your dream workspace in Bali
         </h1>
+        <div className="mt-2">
+          <PresetBar />
+        </div>
       </header>
 
-      <main className="grid flex-1 grid-cols-1 items-start gap-6 lg:grid-cols-[minmax(0,1fr)_440px]">
+      <main className="grid flex-1 grid-cols-1 items-start gap-6 md:grid-cols-2 lg:grid-cols-[minmax(0,1fr)_440px]">
         <WorkspacePreview />
         <Configurator />
       </main>
