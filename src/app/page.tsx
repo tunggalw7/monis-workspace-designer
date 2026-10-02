@@ -1,9 +1,10 @@
 import { Configurator } from "@/components/configurator/Configurator";
 import { WorkspacePreview } from "@/components/preview/WorkspacePreview";
+import { RentBar } from "@/components/RentBar";
 
 export default function Home() {
   return (
-    <div className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-6 px-4 py-6 sm:px-6">
+    <div className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-6 px-4 pt-6 pb-32 sm:px-6">
       <header className="flex flex-col gap-1">
         <p className="text-sm font-semibold tracking-wide text-terracotta-dark uppercase">
           Monis · Workspace Designer
@@ -17,6 +18,7 @@ export default function Home() {
         <WorkspacePreview />
         <Configurator />
       </main>
+      <RentBar />
     </div>
   );
 }

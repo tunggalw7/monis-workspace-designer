@@ -2,8 +2,7 @@
 
 import { useEffect, useRef, type KeyboardEvent } from "react";
 import { getProductsByCategory } from "@/data/products";
-import { formatIDR } from "@/lib/format";
-import { useSetup, useTotals } from "@/store/setup";
+import { useSetup } from "@/store/setup";
 import { useUI, type ConfiguratorTab } from "@/store/ui";
 import { AccessoryCard } from "./AccessoryCard";
 import { ChoiceCard } from "./ChoiceCard";
@@ -26,17 +25,18 @@ export function Configurator() {
   const accessoryCount = useSetup((s) => s.accessories.reduce((n, l) => n + l.qty, 0));
   const selectDesk = useSetup((s) => s.selectDesk);
   const selectChair = useSetup((s) => s.selectChair);
-  const { monthly } = useTotals();
   const tabRefs = useRef<(HTMLButtonElement | null)[]>([]);
   const revealCount = useUI((s) => s.revealCount);
   const clearHighlight = useUI((s) => s.clearHighlight);
 
   // The preview asked to show a tab or product: scroll to it and move focus there.
   useEffect(() => {
-    if (!revealCount) return;
-    const { activeTab, highlightId } = useUI.getState();
-    // Wait a frame so the newly selected panel is visible.
+    if (!useUI.getState().revealPending) return;
+    // Wait a frame so the newly selected panel is visible. The reveal is consumed inside the
+    // frame so React's dev-only double effect run (mount, cleanup, mount) doesn't drop it.
     const frame = requestAnimationFrame(() => {
+      if (!useUI.getState().consumeReveal()) return;
+      const { activeTab, highlightId } = useUI.getState();
       const target =
         (highlightId && document.getElementById(`card-${highlightId}`)) ||
         document.getElementById(`panel-${activeTab}`);
@@ -169,14 +169,6 @@ export function Configurator() {
             <AccessoryCard key={p.id} product={p} />
           ))}
         </div>
-      </div>
-
-      <div className="flex items-baseline justify-between border-t border-border pt-3">
-        <span className="text-sm text-muted">Monthly total</span>
-        <span aria-live="polite" className="font-display text-xl font-semibold">
-          {formatIDR(monthly)}
-          <span className="font-sans text-sm font-normal text-muted">/mo</span>
-        </span>
       </div>
     </section>
   );
