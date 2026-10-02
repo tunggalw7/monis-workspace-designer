@@ -121,7 +121,7 @@ export function Configurator() {
               tabIndex={selected ? 0 : -1}
               onClick={() => setActiveTab(tab.id)}
               onKeyDown={(e) => onTabKeyDown(e, i)}
-              className={`flex flex-1 items-center justify-center gap-1.5 rounded-full px-3 py-2 text-sm font-semibold transition focus-visible:ring-2 focus-visible:ring-ocean focus-visible:outline-none ${
+              className={`flex flex-auto items-center justify-center gap-1 rounded-full px-2 py-2 text-[13px] font-semibold whitespace-nowrap transition focus-visible:ring-2 focus-visible:ring-ocean focus-visible:outline-none @sm:gap-1.5 @sm:px-3 @sm:text-sm ${
                 selected
                   ? "bg-surface text-foreground shadow-sm"
                   : "text-muted hover:text-foreground"
