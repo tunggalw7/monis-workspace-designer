@@ -1,0 +1,35 @@
+@import "tailwindcss";
+
+/* Bali-ish palette: warm sand, terracotta, jungle green, ocean teal. */
+:root {
+  --background: #fbf6ee;
+  --foreground: #2b2118;
+  --surface: #ffffff;
+  --sand: #f1e4cf;
+  --terracotta: #c8643b;
+  --terracotta-dark: #a24e2c;
+  --jungle: #3f6b4a;
+  --ocean: #2a8c8c;
+  --muted: #7a6a5a;
+  --border: #e6d7c0;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-surface: var(--surface);
+  --color-sand: var(--sand);
+  --color-terracotta: var(--terracotta);
+  --color-terracotta-dark: var(--terracotta-dark);
+  --color-jungle: var(--jungle);
+  --color-ocean: var(--ocean);
+  --color-muted: var(--muted);
+  --color-border: var(--border);
+  --font-sans: var(--font-jakarta);
+  --font-display: var(--font-fraunces);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+}
