@@ -27,7 +27,14 @@ export function RentBar() {
             {complete ? "Ready to rent?" : `Pick ${missing} to rent your setup`}
           </p>
           <p aria-live="polite" className="font-display text-lg font-semibold sm:text-2xl">
-            {hydrated ? <AnimatedPrice amount={monthly} /> : "—"}
+            {hydrated ? (
+              <AnimatedPrice amount={monthly} />
+            ) : (
+              <span
+                aria-hidden
+                className="skeleton inline-block h-[0.8em] w-32 rounded-md align-middle"
+              />
+            )}
             <span className="font-sans text-sm font-normal text-muted">/mo</span>
           </p>
         </div>

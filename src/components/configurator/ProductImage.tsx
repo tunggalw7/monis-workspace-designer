@@ -1,10 +1,10 @@
-import Image from "next/image";
+import { FadeImage } from "@/components/FadeImage";
 import type { Product } from "@/data/types";
 
 export function ProductImage({ product }: { product: Product }) {
   return (
-    <div className="flex h-24 items-end justify-center rounded-xl bg-background p-2">
-      <Image
+    <div className="relative flex h-24 items-end justify-center rounded-xl bg-background p-2">
+      <FadeImage
         src={product.image}
         alt={product.name}
         width={product.preview.width}

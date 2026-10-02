@@ -18,7 +18,7 @@ export function Checkout() {
   if (order) return <OrderConfirmation order={order} />;
 
   if (!hydrated) {
-    return <div aria-busy="true" className="h-96 animate-pulse rounded-3xl bg-sand/60" />;
+    return <CheckoutSkeleton />;
   }
 
   if (!isComplete({ deskId, chairId })) {
@@ -41,6 +41,40 @@ export function Checkout() {
     <div className="grid grid-cols-1 items-start gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
       <OrderSummary />
       <CheckoutForm onPlaced={setOrder} />
+    </div>
+  );
+}
+
+/** Mirrors the summary and form while the saved setup is restored. */
+function CheckoutSkeleton() {
+  const card =
+    "flex flex-col gap-4 rounded-3xl border border-border bg-surface p-4 shadow-sm sm:p-6";
+  return (
+    <div
+      aria-busy="true"
+      aria-label="Loading your setup"
+      className="grid grid-cols-1 items-start gap-6 lg:grid-cols-2"
+    >
+      <div className={card}>
+        <span className="skeleton h-7 w-40 rounded-lg" />
+        <span className="skeleton aspect-[12/10] w-full rounded-2xl" />
+        {[0, 1, 2, 3].map((i) => (
+          <div key={i} className="flex items-center gap-3">
+            <span className="skeleton size-12 shrink-0 rounded-xl" />
+            <span className="skeleton h-4 flex-1 rounded-md" />
+            <span className="skeleton h-4 w-20 rounded-md" />
+          </div>
+        ))}
+      </div>
+      <div className={card}>
+        <span className="skeleton h-7 w-48 rounded-lg" />
+        {[0, 1, 2, 3, 4].map((i) => (
+          <div key={i} className="flex flex-col gap-2">
+            <span className="skeleton h-4 w-28 rounded-md" />
+            <span className="skeleton h-11 w-full rounded-xl" />
+          </div>
+        ))}
+      </div>
     </div>
   );
 }

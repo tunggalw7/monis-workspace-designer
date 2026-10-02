@@ -10,7 +10,7 @@ import { ProductDetails } from "./ProductDetails";
 import { ProductImage } from "./ProductImage";
 
 const stepButton =
-  "grid size-8 place-items-center rounded-full text-lg font-semibold leading-none transition focus-visible:ring-2 focus-visible:ring-ocean focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-40";
+  "grid size-8 place-items-center rounded-full transition focus-visible:ring-2 focus-visible:ring-ocean focus-visible:ring-offset-2 focus-visible:outline-none disabled:cursor-not-allowed disabled:opacity-40";
 
 /** Multi-choice card with a quantity stepper. */
 export function AccessoryCard({ product }: { product: Product }) {
@@ -50,7 +50,7 @@ export function AccessoryCard({ product }: { product: Product }) {
               aria-label={qty === 1 ? `Remove ${product.name}` : `Remove one ${product.name}`}
               className={`${stepButton} bg-surface text-terracotta-dark hover:bg-white`}
             >
-              −
+              <StepIcon />
             </button>
             <output aria-live="polite" className="text-sm font-semibold">
               {qty}
@@ -63,7 +63,7 @@ export function AccessoryCard({ product }: { product: Product }) {
               aria-label={`Add one more ${product.name}`}
               className={`${stepButton} bg-terracotta text-white hover:bg-terracotta-dark`}
             >
-              +
+              <StepIcon plus />
             </button>
           </div>
         )}
@@ -76,5 +76,23 @@ export function AccessoryCard({ product }: { product: Product }) {
         <ProductDetails product={product} />
       </div>
     </div>
+  );
+}
+
+/** Drawn rather than typed, so the sign sits in the exact center of the button. */
+function StepIcon({ plus = false }: { plus?: boolean }) {
+  return (
+    <svg
+      aria-hidden
+      viewBox="0 0 14 14"
+      className="size-3.5"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2.25"
+      strokeLinecap="round"
+    >
+      <path d="M2.5 7h9" />
+      {plus && <path d="M7 2.5v9" />}
+    </svg>
   );
 }

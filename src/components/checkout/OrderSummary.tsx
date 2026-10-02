@@ -23,12 +23,11 @@ export function OrderSummary() {
   }
 
   function remove(product: Product) {
-    withUndo(() => {
-      if (product.category === "desk") setup.selectDesk(null);
-      else if (product.category === "chair") setup.selectChair(null);
-      else setup.removeAccessory(product.id);
-    }, `${product.name} removed`);
+    withUndo(() => setup.removeAccessory(product.id), `${product.name} removed`);
   }
+
+  // Every rentable setup needs a desk and a chair, so here they can be swapped but not removed.
+  const required = (p: Product) => p.category === "desk" || p.category === "chair";
 
   return (
     <section
@@ -68,15 +67,18 @@ export function OrderSummary() {
                 onClick={() => edit(product)}
                 className="rounded-full px-2.5 py-1 text-xs font-semibold text-ocean hover:bg-sand focus-visible:ring-2 focus-visible:ring-ocean focus-visible:outline-none"
               >
-                Edit<span className="sr-only"> {product.name}</span>
+                {required(product) ? "Change" : "Edit"}
+                <span className="sr-only"> {product.name}</span>
               </button>
-              <button
-                type="button"
-                onClick={() => remove(product)}
-                className="rounded-full px-2.5 py-1 text-xs font-semibold text-terracotta-dark hover:bg-sand focus-visible:ring-2 focus-visible:ring-ocean focus-visible:outline-none"
-              >
-                Remove<span className="sr-only"> {product.name}</span>
-              </button>
+              {!required(product) && (
+                <button
+                  type="button"
+                  onClick={() => remove(product)}
+                  className="rounded-full px-2.5 py-1 text-xs font-semibold text-terracotta-dark hover:bg-sand focus-visible:ring-2 focus-visible:ring-ocean focus-visible:outline-none"
+                >
+                  Remove<span className="sr-only"> {product.name}</span>
+                </button>
+              )}
             </div>
           </li>
         ))}

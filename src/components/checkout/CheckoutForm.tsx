@@ -162,18 +162,33 @@ export function CheckoutForm({ onPlaced }: { onPlaced: (order: Order) => void })
 
       <div className="grid gap-4 sm:grid-cols-2">
         <Field id="area" label="Delivery area" error={errors.area}>
-          <select
-            {...a11y("area")}
-            className={input}
-            onChange={(e) => update("area", e.target.value)}
-          >
-            <option value="">Choose an area…</option>
-            {DELIVERY_AREAS.map((a) => (
-              <option key={a} value={a}>
-                {a}
-              </option>
-            ))}
-          </select>
+          <div className="relative">
+            <select
+              {...a11y("area")}
+              className={`${input} appearance-none pr-11`}
+              onChange={(e) => update("area", e.target.value)}
+            >
+              <option value="">Choose an area…</option>
+              {DELIVERY_AREAS.map((a) => (
+                <option key={a} value={a}>
+                  {a}
+                </option>
+              ))}
+            </select>
+            {/* Own chevron, so it sits clear of the rounded border. */}
+            <svg
+              aria-hidden
+              viewBox="0 0 16 16"
+              className="pointer-events-none absolute top-1/2 right-4 size-4 -translate-y-1/2 text-muted"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M4 6l4 4 4-4" />
+            </svg>
+          </div>
         </Field>
 
         <Field

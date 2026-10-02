@@ -14,7 +14,7 @@ export function DurationPicker() {
         {RENTAL_MONTHS.map((m) => (
           <label
             key={m}
-            className="cursor-pointer rounded-full py-2 text-center text-sm font-semibold text-muted transition hover:text-foreground has-checked:bg-surface has-checked:text-foreground has-checked:shadow-sm has-focus-visible:ring-2 has-focus-visible:ring-ocean"
+            className="rounded-full py-2 text-center text-sm font-semibold text-muted transition hover:text-foreground has-checked:bg-surface has-checked:text-foreground has-checked:shadow-sm has-focus-visible:ring-2 has-focus-visible:ring-ocean"
           >
             <input
               type="radio"

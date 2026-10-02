@@ -24,6 +24,7 @@ export function WorkspacePreview() {
     [deskId, chairId, accessories],
   );
   const openItem = scene.items.find((i) => i.key === openKey);
+  const ghostX = scene.offsetX + STAGE.width / 2;
   const x = (cm: number) => `${(cm / scene.width) * 100}%`;
   const frame = (item: PlacedItem) => ({
     left: x(item.left),
@@ -45,6 +46,7 @@ export function WorkspacePreview() {
     <MotionConfig reducedMotion="user">
       <section
         aria-label="Workspace preview"
+        aria-busy={!hydrated}
         className="relative overflow-hidden rounded-3xl bg-gradient-to-b from-[#f8eddc] to-sand p-3 sm:p-6"
       >
         <div
@@ -64,7 +66,7 @@ export function WorkspacePreview() {
                   aria-label={`${item.product.name}: swap or remove`}
                   aria-expanded={openKey === item.key}
                   onClick={() => setOpenKey((k) => (k === item.key ? null : item.key))}
-                  className="absolute cursor-pointer rounded-md transition-[filter] hover:drop-shadow-[0_0_4px_rgba(42,140,140,0.7)] focus-visible:ring-2 focus-visible:ring-ocean focus-visible:outline-none"
+                  className="absolute rounded-md transition-[filter] hover:drop-shadow-[0_0_4px_rgba(42,140,140,0.7)] focus-visible:ring-2 focus-visible:ring-ocean focus-visible:outline-none"
                   style={{ zIndex: item.z }}
                   initial={{ opacity: 0, y: -14, ...frame(item) }}
                   animate={{ opacity: 1, y: 0, ...frame(item) }}
@@ -105,25 +107,71 @@ export function WorkspacePreview() {
 
           {openItem && <ItemMenu item={openItem} stageWidth={scene.width} onClose={closeMenu} />}
 
-          {hydrated && !deskId && (
-            <div className="absolute inset-x-0 top-[50%] z-40 flex -translate-y-1/2 justify-center px-4">
-              {/* A soft card keeps the prompt readable over the window and platform. */}
-              <div className="flex flex-col items-center gap-2 rounded-2xl bg-surface/85 px-5 py-4 text-center shadow-sm backdrop-blur-sm">
-                <p className="font-display text-xl font-semibold sm:text-2xl">
-                  Start by picking a desk
-                </p>
-                {accessories.length > 0 && (
-                  <p className="text-sm text-muted">Your accessories will appear on it.</p>
-                )}
-                <button
-                  type="button"
-                  onClick={() => reveal("desk")}
-                  className="rounded-full bg-terracotta px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-terracotta-dark focus-visible:ring-2 focus-visible:ring-ocean focus-visible:ring-offset-2 focus-visible:outline-none"
-                >
-                  Browse desks
-                </button>
-              </div>
+          {/* Until the saved setup is restored, sketch where the desk and chair will stand. */}
+          {!hydrated && (
+            <div aria-hidden>
+              <span className="skeleton absolute top-[27%] left-[30%] h-[16%] w-[40%] rounded-lg" />
+              <span className="skeleton absolute top-[46%] left-[17%] h-[37%] w-[66%] rounded-xl opacity-70" />
+              <span className="skeleton absolute top-[52%] left-[46%] h-[38%] w-[18%] rounded-2xl" />
             </div>
+          )}
+
+          {hydrated && !deskId && (
+            <>
+              {/* A dashed "ghost" desk on the platform shows where the setup will stand. */}
+              <svg
+                aria-hidden
+                viewBox={`0 0 ${scene.width} ${STAGE.height}`}
+                className="absolute inset-0 h-full w-full text-terracotta motion-safe:animate-pulse"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.2"
+                strokeDasharray="4 3"
+                strokeLinecap="round"
+                opacity="0.45"
+              >
+                <rect x={ghostX - 70} y={STAGE.floorY - 75} width="140" height="7" rx="2" />
+                <path
+                  d={`M${ghostX - 62} ${STAGE.floorY - 68}V${STAGE.floorY}M${ghostX + 62} ${STAGE.floorY - 68}V${STAGE.floorY}`}
+                />
+              </svg>
+
+              <div className="pointer-events-none absolute inset-0 z-40 flex items-center justify-center px-4">
+                {/* A soft card keeps the prompt readable over the window and platform. */}
+                <div className="pointer-events-auto flex max-w-xs flex-col items-center gap-2 rounded-3xl bg-surface/90 px-5 py-4 text-center shadow-lg ring-1 ring-border backdrop-blur-sm sm:gap-2.5 sm:px-7 sm:py-5">
+                  <span className="rounded-full bg-sand px-2.5 py-0.5 text-[11px] font-semibold tracking-wide text-terracotta-dark uppercase">
+                    Step 1 · Your desk
+                  </span>
+                  <p className="font-display text-lg leading-tight font-semibold sm:text-2xl">
+                    Start by picking a desk
+                  </p>
+                  <p className="hidden text-sm text-muted sm:block">
+                    {accessories.length > 0
+                      ? "Your accessories are waiting to go on it."
+                      : "Then add a chair, screens and a plant. It all appears right here."}
+                  </p>
+                  <button
+                    type="button"
+                    onClick={() => reveal("desk")}
+                    className="group mt-1 inline-flex items-center gap-1.5 rounded-full bg-terracotta py-2 pr-3.5 pl-4 text-sm font-semibold text-white shadow-md shadow-terracotta/30 transition hover:-translate-y-0.5 hover:bg-terracotta-dark hover:shadow-lg focus-visible:ring-2 focus-visible:ring-ocean focus-visible:ring-offset-2 focus-visible:outline-none motion-reduce:hover:translate-y-0"
+                  >
+                    Browse desks
+                    <svg
+                      aria-hidden
+                      viewBox="0 0 16 16"
+                      className="size-4 transition-transform group-hover:translate-x-0.5"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <path d="M3 8h10M9 4l4 4-4 4" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            </>
           )}
         </div>
       </section>

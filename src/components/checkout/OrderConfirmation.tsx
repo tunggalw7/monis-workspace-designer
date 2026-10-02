@@ -43,7 +43,7 @@ export function OrderConfirmation({ order }: { order: Order }) {
           tabIndex={-1}
           className="font-display text-3xl font-semibold outline-none"
         >
-          Terima kasih, {firstName}!
+          Thank you, {firstName}!
         </h2>
         <p className="text-muted">
           Your rental request <strong className="text-foreground">{order.id}</strong> is in. We’ll
@@ -98,7 +98,7 @@ export function OrderConfirmation({ order }: { order: Order }) {
         </div>
       </div>
 
-      <div className="flex flex-col gap-2 sm:flex-row sm:justify-center">
+      <div className="flex flex-col gap-3 sm:flex-row sm:justify-center">
         <Link
           href="/"
           className="rounded-full border-2 border-terracotta px-5 py-3 text-center font-semibold text-terracotta-dark transition hover:bg-sand focus-visible:ring-2 focus-visible:ring-ocean focus-visible:outline-none"
