@@ -28,43 +28,49 @@ export function PresetBar() {
 
   return (
     <div
-      // One swipeable row on phones; wraps on wider screens.
-      className="-mx-4 flex items-center gap-2 overflow-x-auto px-4 pb-1 sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0"
+      className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center"
       role="group"
       aria-label="Quick start presets"
     >
-      <span className="shrink-0 text-sm font-semibold text-muted">Quick start:</span>
-      {presetSetups.map((p) => {
-        const active = hydrated && sameSetup(current, p.clean);
-        return (
+      {/* Phones: label and Clear on one line, presets as equal tiles below. From sm, one row. */}
+      <div className="flex min-h-8 items-center justify-between sm:contents">
+        <span className="shrink-0 text-sm font-semibold text-muted">Quick start:</span>
+        {hydrated && !isEmpty && (
           <button
-            key={p.id}
             type="button"
-            title={p.tagline}
-            aria-pressed={active}
-            onClick={() => withUndo(() => applyPreset(p.id), `${p.name} setup applied`)}
-            className={`shrink-0 rounded-full border-2 px-3 py-1.5 text-sm font-semibold whitespace-nowrap transition focus-visible:ring-2 focus-visible:ring-ocean focus-visible:ring-offset-2 focus-visible:outline-none ${
-              active
-                ? "border-jungle bg-jungle text-white"
-                : "border-border bg-surface hover:border-jungle"
-            }`}
+            onClick={() => withUndo(reset, "Setup cleared")}
+            className="-mr-3 shrink-0 rounded-full px-3 py-1.5 text-sm font-semibold text-terracotta-dark underline-offset-2 hover:underline focus-visible:ring-2 focus-visible:ring-ocean focus-visible:outline-none sm:order-last sm:mr-0"
           >
-            {p.name}
-            <span className={`ml-1.5 font-normal ${active ? "text-white/85" : "text-muted"}`}>
-              {formatIDR(getMonthlyTotal(p.clean))}
-            </span>
+            Clear
           </button>
-        );
-      })}
-      {hydrated && !isEmpty && (
-        <button
-          type="button"
-          onClick={() => withUndo(reset, "Setup cleared")}
-          className="shrink-0 rounded-full px-3 py-1.5 text-sm font-semibold text-terracotta-dark underline-offset-2 hover:underline focus-visible:ring-2 focus-visible:ring-ocean focus-visible:outline-none"
-        >
-          Clear
-        </button>
-      )}
+        )}
+      </div>
+      <div className="grid grid-cols-3 gap-2 sm:flex sm:flex-wrap">
+        {presetSetups.map((p) => {
+          const active = hydrated && sameSetup(current, p.clean);
+          return (
+            <button
+              key={p.id}
+              type="button"
+              title={p.tagline}
+              aria-pressed={active}
+              onClick={() => withUndo(() => applyPreset(p.id), `${p.name} setup applied`)}
+              className={`flex min-w-0 flex-col items-center justify-center rounded-2xl border-2 px-2 py-1.5 text-sm leading-tight font-semibold transition focus-visible:ring-2 focus-visible:ring-ocean focus-visible:ring-offset-2 focus-visible:outline-none sm:flex-row sm:rounded-full sm:px-3 sm:whitespace-nowrap ${
+                active
+                  ? "border-jungle bg-jungle text-white"
+                  : "border-border bg-surface hover:border-jungle"
+              }`}
+            >
+              {p.name}
+              <span
+                className={`text-xs font-normal whitespace-nowrap sm:ml-1.5 sm:text-sm ${active ? "text-white/85" : "text-muted"}`}
+              >
+                {formatIDR(getMonthlyTotal(p.clean))}
+              </span>
+            </button>
+          );
+        })}
+      </div>
     </div>
   );
 }

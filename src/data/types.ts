@@ -1,5 +1,8 @@
 export type Category = "desk" | "chair" | "accessory" | "extra";
 
+/** Bali extras are grouped into lifestyle zones around the platform. */
+export type Zone = "coffee" | "outdoor" | "relax" | "garage";
+
 /** Where an item is placed in the live preview. */
 export type Slot =
   "desk" | "chair" | "monitor" | "laptop" | "keyboard" | "lamp" | "plant" | "floor" | "zone";
@@ -27,6 +30,8 @@ export type Product = {
   dimensions: string;
   highlights: string[];
   preview: PreviewMeta;
+  /** Extras only: which zone the item belongs to. */
+  zone?: Zone;
   /** Desks only: how many items of a slot fit on this desk (overrides maxQty when lower). */
   capacity?: Partial<Record<Slot, number>>;
 };

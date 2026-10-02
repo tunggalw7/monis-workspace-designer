@@ -9,12 +9,7 @@ import { Backdrop } from "./Backdrop";
 import { ItemMenu } from "./ItemMenu";
 import { layoutScene, STAGE, type PlacedItem } from "./layout";
 
-const x = (cm: number) => `${(cm / STAGE.width) * 100}%`;
 const y = (cm: number) => `${(cm / STAGE.height) * 100}%`;
-
-function frame(item: PlacedItem) {
-  return { left: x(item.left), top: y(item.top), width: x(item.width), height: y(item.height) };
-}
 
 export function WorkspacePreview() {
   const deskId = useSetup((s) => s.deskId);
@@ -29,6 +24,13 @@ export function WorkspacePreview() {
     [deskId, chairId, accessories],
   );
   const openItem = scene.items.find((i) => i.key === openKey);
+  const x = (cm: number) => `${(cm / scene.width) * 100}%`;
+  const frame = (item: PlacedItem) => ({
+    left: x(item.left),
+    top: y(item.top),
+    width: x(item.width),
+    height: y(item.height),
+  });
 
   const closeMenu = useCallback((restoreFocus: boolean) => {
     setOpenKey((key) => {
@@ -43,13 +45,13 @@ export function WorkspacePreview() {
     <MotionConfig reducedMotion="user">
       <section
         aria-label="Workspace preview"
-        className="relative overflow-hidden rounded-3xl bg-gradient-to-b from-[#f8eddc] to-sand p-3 sm:p-6 md:sticky md:top-6"
+        className="relative overflow-hidden rounded-3xl bg-gradient-to-b from-[#f8eddc] to-sand p-3 sm:p-6"
       >
         <div
           className="relative mx-auto w-full max-w-3xl"
-          style={{ aspectRatio: `${STAGE.width} / ${STAGE.height}` }}
+          style={{ aspectRatio: `${scene.width} / ${STAGE.height}` }}
         >
-          <Backdrop />
+          <Backdrop width={scene.width} offsetX={scene.offsetX} />
 
           {hydrated && (
             <AnimatePresence>
@@ -101,23 +103,26 @@ export function WorkspacePreview() {
             </AnimatePresence>
           )}
 
-          {openItem && <ItemMenu item={openItem} onClose={closeMenu} />}
+          {openItem && <ItemMenu item={openItem} stageWidth={scene.width} onClose={closeMenu} />}
 
           {hydrated && !deskId && (
-            <div className="absolute inset-x-0 top-[50%] z-40 flex -translate-y-1/2 flex-col items-center gap-2 px-4 text-center">
-              <p className="font-display text-xl font-semibold sm:text-2xl">
-                Start by picking a desk
-              </p>
-              {accessories.length > 0 && (
-                <p className="text-sm text-muted">Your accessories will appear on it.</p>
-              )}
-              <button
-                type="button"
-                onClick={() => reveal("desk")}
-                className="rounded-full bg-terracotta px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-terracotta-dark focus-visible:ring-2 focus-visible:ring-ocean focus-visible:ring-offset-2 focus-visible:outline-none"
-              >
-                Browse desks
-              </button>
+            <div className="absolute inset-x-0 top-[50%] z-40 flex -translate-y-1/2 justify-center px-4">
+              {/* A soft card keeps the prompt readable over the window and platform. */}
+              <div className="flex flex-col items-center gap-2 rounded-2xl bg-surface/85 px-5 py-4 text-center shadow-sm backdrop-blur-sm">
+                <p className="font-display text-xl font-semibold sm:text-2xl">
+                  Start by picking a desk
+                </p>
+                {accessories.length > 0 && (
+                  <p className="text-sm text-muted">Your accessories will appear on it.</p>
+                )}
+                <button
+                  type="button"
+                  onClick={() => reveal("desk")}
+                  className="rounded-full bg-terracotta px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-terracotta-dark focus-visible:ring-2 focus-visible:ring-ocean focus-visible:ring-offset-2 focus-visible:outline-none"
+                >
+                  Browse desks
+                </button>
+              </div>
             </div>
           )}
         </div>

@@ -40,7 +40,9 @@ export function ChoiceCard({ product, name, checked, onSelect }: Props) {
           Selected
         </span>
       )}
-      <ProductDetails product={product} />
+      <div className="mt-auto">
+        <ProductDetails product={product} />
+      </div>
     </div>
   );
 }

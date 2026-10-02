@@ -7,11 +7,8 @@ import { SetupThumbnail } from "@/components/preview/SetupThumbnail";
 import type { Product } from "@/data/types";
 import { formatIDR } from "@/lib/format";
 import { useLineItems, useSetup, useTotals, withUndo } from "@/store/setup";
-import { useUI, type ConfiguratorTab } from "@/store/ui";
+import { tabFor, useUI } from "@/store/ui";
 import { DurationPicker } from "./DurationPicker";
-
-const tabFor = (p: Product): ConfiguratorTab =>
-  p.category === "desk" || p.category === "chair" ? p.category : "accessory";
 
 export function OrderSummary() {
   const router = useRouter();

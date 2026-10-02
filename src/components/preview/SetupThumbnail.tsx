@@ -11,7 +11,7 @@ type Props = { setup: Pick<Setup, "deskId" | "chairId" | "accessories">; classNa
 /** Static, non-interactive render of a setup (summary and confirmation). */
 export function SetupThumbnail({ setup, className = "" }: Props) {
   const { deskId, chairId, accessories } = setup;
-  const { items } = useMemo(
+  const { items, width, offsetX } = useMemo(
     () => layoutScene({ deskId, chairId, accessories }),
     [deskId, chairId, accessories],
   );
@@ -21,9 +21,9 @@ export function SetupThumbnail({ setup, className = "" }: Props) {
       role="img"
       aria-label={`Your workspace: ${items.map((i) => i.product.name).join(", ") || "empty"}`}
       className={`relative overflow-hidden rounded-2xl bg-gradient-to-b from-[#f8eddc] to-sand ${className}`}
-      style={{ aspectRatio: `${STAGE.width} / ${STAGE.height}` }}
+      style={{ aspectRatio: `${width} / ${STAGE.height}` }}
     >
-      <Backdrop />
+      <Backdrop width={width} offsetX={offsetX} />
       {items.map((item) => (
         <Image
           key={item.key}
@@ -33,9 +33,9 @@ export function SetupThumbnail({ setup, className = "" }: Props) {
           height={item.product.preview.height}
           className="absolute"
           style={{
-            left: `${(item.left / STAGE.width) * 100}%`,
+            left: `${(item.left / width) * 100}%`,
             top: `${(item.top / STAGE.height) * 100}%`,
-            width: `${(item.width / STAGE.width) * 100}%`,
+            width: `${(item.width / width) * 100}%`,
             height: `${(item.height / STAGE.height) * 100}%`,
             zIndex: item.z,
           }}

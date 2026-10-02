@@ -3,8 +3,18 @@ import type { Product } from "@/data/types";
 import { maxQtyFor, type Setup } from "@/lib/setup";
 import type { ConfiguratorTab } from "@/store/ui";
 
-/** Stage coordinates are in cm, matching each asset's SVG viewBox. */
+/**
+ * Stage coordinates are in cm, matching each asset's SVG viewBox. This is the base stage
+ * around the desk; Bali extras widen it with a zone on either side.
+ */
 export const STAGE = { width: 240, height: 200, floorY: 166 } as const;
+
+/** Extras stand further back, so they're drawn smaller. */
+const EXTRA_SCALE = 0.7;
+const LEFT_ZONE_WIDTH = 70;
+const RIGHT_ZONE_WIDTH = 100;
+const LEFT_EXTRAS = ["coffee-machine", "bean-bag"];
+const RIGHT_EXTRAS = ["tool-shelf", "surfboard", "scooter"];
 
 export type PlacedItem = {
   /** Stable per slot, so swapping a desk animates in place. */
@@ -27,7 +37,14 @@ export type Hotspot = {
   y: number;
 };
 
-export type Scene = { items: PlacedItem[]; hotspots: Hotspot[] };
+export type Scene = {
+  /** Full stage width including any extras zones. */
+  width: number;
+  /** Where the base stage starts (width of the left zone). */
+  offsetX: number;
+  items: PlacedItem[];
+  hotspots: Hotspot[];
+};
 
 /** Horizontal offsets from the cluster center for 1–3 monitors (side screens tuck behind). */
 const MONITOR_OFFSETS: Record<number, number[]> = { 1: [0], 2: [-31.5, 31.5], 3: [-56, 0, 56] };
@@ -55,7 +72,11 @@ export function layoutScene(setup: Pick<Setup, "deskId" | "chairId" | "accessori
   const qty = (id: string) => setup.accessories.find((l) => l.id === id)?.qty ?? 0;
   const desk = setup.deskId ? getProduct(setup.deskId) : undefined;
   const chair = setup.chairId ? getProduct(setup.chairId) : undefined;
-  const centerX = STAGE.width / 2;
+  const hasLeft = LEFT_EXTRAS.some((id) => qty(id) > 0);
+  const hasRight = RIGHT_EXTRAS.some((id) => qty(id) > 0);
+  const offsetX = hasLeft ? LEFT_ZONE_WIDTH : 0;
+  const width = offsetX + STAGE.width + (hasRight ? RIGHT_ZONE_WIDTH : 0);
+  const centerX = offsetX + STAGE.width / 2;
   const chairX = desk ? centerX + desk.preview.width * 0.18 : centerX;
 
   if (desk) {
@@ -146,5 +167,21 @@ export function layoutScene(setup: Pick<Setup, "deskId" | "chairId" | "accessori
 
   if (chair) items.push(place(chair, "chair", chairX, STAGE.floorY + CHAIR_DROP));
 
-  return { items, hotspots };
+  // Bali extras around the platform: back items sit higher (further away), front items lower.
+  const rightStart = offsetX + STAGE.width;
+  const extraSpots: Record<string, { x: number; bottom: number }> = {
+    "coffee-machine": { x: 22, bottom: STAGE.floorY - 8 },
+    "bean-bag": { x: 46, bottom: STAGE.floorY + 22 },
+    "tool-shelf": { x: rightStart + 30, bottom: STAGE.floorY - 10 },
+    surfboard: { x: rightStart + 70, bottom: STAGE.floorY - 8 },
+    scooter: { x: rightStart + 42, bottom: STAGE.floorY + 24 },
+  };
+  for (const [id, spot] of Object.entries(extraSpots)) {
+    const product = getProduct(id);
+    if (product && qty(id)) {
+      items.push(place(product, id, spot.x, spot.bottom, product.preview.zIndex, EXTRA_SCALE));
+    }
+  }
+
+  return { width, offsetX, items, hotspots };
 }

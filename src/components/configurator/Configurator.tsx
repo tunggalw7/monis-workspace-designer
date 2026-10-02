@@ -23,7 +23,9 @@ export function Configurator() {
   const setActiveTab = useUI((s) => s.setActiveTab);
   const deskId = useSetup((s) => s.deskId);
   const chairId = useSetup((s) => s.chairId);
-  const accessoryCount = useSetup((s) => s.accessories.reduce((n, l) => n + l.qty, 0));
+  const accessoryCount = useSetup((s) =>
+    s.accessories.reduce((n, l) => (getProduct(l.id)?.category === "accessory" ? n + l.qty : n), 0),
+  );
   const selectDesk = useSetup((s) => s.selectDesk);
   const selectChair = useSetup((s) => s.selectChair);
   const tabRefs = useRef<(HTMLButtonElement | null)[]>([]);
@@ -140,7 +142,7 @@ export function Configurator() {
       <div role="tabpanel" id="panel-desk" aria-labelledby="tab-desk" hidden={activeTab !== "desk"}>
         <fieldset>
           <legend className="mb-3 text-sm text-muted">Pick one desk</legend>
-          <div className="grid grid-cols-2 gap-3 @sm:grid-cols-3">
+          <div className="grid grid-cols-2 gap-3 @md:grid-cols-3">
             {desks.map((p) => (
               <ChoiceCard
                 key={p.id}
@@ -162,7 +164,7 @@ export function Configurator() {
       >
         <fieldset>
           <legend className="mb-3 text-sm text-muted">Pick one chair</legend>
-          <div className="grid grid-cols-2 gap-3 @sm:grid-cols-3">
+          <div className="grid grid-cols-2 gap-3 @md:grid-cols-3">
             {chairs.map((p) => (
               <ChoiceCard
                 key={p.id}
@@ -183,7 +185,7 @@ export function Configurator() {
         hidden={activeTab !== "accessory"}
       >
         <p className="mb-3 text-sm text-muted">Add as many as you like</p>
-        <div className="grid grid-cols-2 gap-3 @sm:grid-cols-3">
+        <div className="grid grid-cols-2 gap-3 @md:grid-cols-3">
           {accessories.map((p) => (
             <AccessoryCard key={p.id} product={p} />
           ))}

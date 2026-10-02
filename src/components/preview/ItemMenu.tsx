@@ -2,16 +2,16 @@
 
 import { useEffect, useRef } from "react";
 import { useSetup, withUndo } from "@/store/setup";
-import { useUI } from "@/store/ui";
+import { tabFor, useUI } from "@/store/ui";
 import { STAGE, type PlacedItem } from "./layout";
 
-type Props = { item: PlacedItem; onClose: (restoreFocus: boolean) => void };
+type Props = { item: PlacedItem; stageWidth: number; onClose: (restoreFocus: boolean) => void };
 
 const action =
   "rounded-full px-3 py-1.5 text-xs font-semibold transition focus-visible:ring-2 focus-visible:ring-ocean focus-visible:outline-none";
 
 /** Small popover for an item clicked in the preview: swap/edit or remove it. */
-export function ItemMenu({ item, onClose }: Props) {
+export function ItemMenu({ item, stageWidth, onClose }: Props) {
   const ref = useRef<HTMLDivElement>(null);
   const { product } = item;
   const qty = useSetup((s) => s.accessories.find((l) => l.id === product.id)?.qty ?? 0);
@@ -37,7 +37,7 @@ export function ItemMenu({ item, onClose }: Props) {
   }, [onClose]);
 
   const isAccessory = product.category !== "desk" && product.category !== "chair";
-  const tab = isAccessory ? "accessory" : (product.category as "desk" | "chair");
+  const tab = tabFor(product);
 
   function remove() {
     withUndo(() => {
@@ -54,7 +54,7 @@ export function ItemMenu({ item, onClose }: Props) {
   }
 
   // Keep the menu inside the stage near the edges.
-  const centerX = Math.min(Math.max(item.left + item.width / 2, 40), STAGE.width - 40);
+  const centerX = Math.min(Math.max(item.left + item.width / 2, 40), stageWidth - 40);
   const centerY = Math.min(item.top + item.height / 2, STAGE.height - 25);
 
   return (
@@ -64,7 +64,7 @@ export function ItemMenu({ item, onClose }: Props) {
       aria-label={`${product.name} options`}
       className="absolute z-[100] flex -translate-x-1/2 -translate-y-1/2 flex-col items-center gap-2 rounded-2xl border border-border bg-surface p-2.5 shadow-lg"
       style={{
-        left: `${(centerX / STAGE.width) * 100}%`,
+        left: `${(centerX / stageWidth) * 100}%`,
         top: `${(centerY / STAGE.height) * 100}%`,
       }}
     >

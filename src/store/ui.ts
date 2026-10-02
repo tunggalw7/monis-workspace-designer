@@ -1,6 +1,15 @@
 import { create } from "zustand";
+import type { Product } from "@/data/types";
 
 export type ConfiguratorTab = "desk" | "chair" | "accessory";
+
+/** The configurator tab that holds a product. Extras live outside the tabs, so keep the current one. */
+export function tabFor(product: Product): ConfiguratorTab {
+  if (product.category === "extra") return useUI.getState().activeTab;
+  return product.category === "desk" || product.category === "chair"
+    ? product.category
+    : "accessory";
+}
 
 type UIState = {
   activeTab: ConfiguratorTab;

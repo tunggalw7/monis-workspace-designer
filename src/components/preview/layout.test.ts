@@ -9,7 +9,7 @@ const scene = (
 
 describe("layoutScene", () => {
   it("is empty without a selection", () => {
-    expect(scene(null, null)).toEqual({ items: [], hotspots: [] });
+    expect(scene(null, null)).toMatchObject({ width: STAGE.width, items: [], hotspots: [] });
   });
 
   it("stands the desk on the floor and the chair in front of it", () => {
@@ -67,13 +67,35 @@ describe("layoutScene", () => {
       { id: "plant", qty: 2 },
       { id: "storage-drawer", qty: 1 },
     ];
-    for (const desk of ["desk-standard", "desk-standing", "desk-l-shaped"]) {
-      for (const item of scene(desk, "chair-premium", all).items) {
-        expect(item.left).toBeGreaterThanOrEqual(0);
-        expect(item.top).toBeGreaterThanOrEqual(0);
-        expect(item.left + item.width).toBeLessThanOrEqual(STAGE.width);
-        expect(item.top + item.height).toBeLessThanOrEqual(STAGE.height);
+    const extras = ["coffee-machine", "bean-bag", "tool-shelf", "surfboard", "scooter"];
+    for (const desk of ["desk-standard", "desk-standing", "desk-l-shaped", null]) {
+      for (const withExtras of [false, true]) {
+        const lines = withExtras ? [...all, ...extras.map((id) => ({ id, qty: 1 }))] : all;
+        const s = scene(desk, "chair-premium", lines);
+        for (const item of s.items) {
+          expect(item.left).toBeGreaterThanOrEqual(0);
+          expect(item.top).toBeGreaterThanOrEqual(0);
+          expect(item.left + item.width).toBeLessThanOrEqual(s.width);
+          expect(item.top + item.height).toBeLessThanOrEqual(STAGE.height);
+        }
       }
     }
+  });
+
+  it("widens the stage only on the sides that have extras", () => {
+    expect(scene("desk-standard", null, [{ id: "bean-bag", qty: 1 }])).toMatchObject({
+      width: STAGE.width + 70,
+      offsetX: 70,
+    });
+    expect(scene("desk-standard", null, [{ id: "scooter", qty: 1 }])).toMatchObject({
+      width: STAGE.width + 100,
+      offsetX: 0,
+    });
+  });
+
+  it("shows extras even without a desk", () => {
+    expect(scene(null, null, [{ id: "surfboard", qty: 1 }]).items.map((i) => i.key)).toEqual([
+      "surfboard",
+    ]);
   });
 });

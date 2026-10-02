@@ -1,4 +1,5 @@
 import { Configurator } from "@/components/configurator/Configurator";
+import { BaliExtras } from "@/components/BaliExtras";
 import { WorkspacePreview } from "@/components/preview/WorkspacePreview";
 import { PresetBar } from "@/components/PresetBar";
 import { RentBar } from "@/components/RentBar";
@@ -19,7 +20,11 @@ export default function Home() {
       </header>
 
       <main className="grid flex-1 grid-cols-1 items-start gap-6 md:grid-cols-2 lg:grid-cols-[minmax(0,1fr)_440px]">
-        <WorkspacePreview />
+        {/* On mobile the extras drop below the configurator; from md they sit under the preview. */}
+        <div className="contents md:flex md:min-w-0 md:flex-col md:gap-6">
+          <WorkspacePreview />
+          <BaliExtras className="order-last md:order-none" />
+        </div>
         <Configurator />
       </main>
       <RentBar />

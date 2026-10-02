@@ -32,46 +32,49 @@ export function AccessoryCard({ product }: { product: Product }) {
       <span className="leading-tight font-semibold">{product.name}</span>
       <Price amount={product.pricePerMonth} />
 
-      {qty === 0 ? (
-        <button
-          type="button"
-          onClick={() => setQty(product.id, 1)}
-          className="rounded-full border-2 border-terracotta px-3 py-1.5 text-sm font-semibold text-terracotta-dark transition hover:bg-terracotta hover:text-white focus-visible:ring-2 focus-visible:ring-ocean focus-visible:ring-offset-2 focus-visible:outline-none"
-        >
-          Add<span className="sr-only"> {product.name}</span>
-        </button>
-      ) : (
-        <div className="flex items-center justify-between rounded-full bg-sand p-0.5">
+      {/* Pinned to the bottom so controls line up across a row of cards. */}
+      <div className="mt-auto flex flex-col gap-2">
+        {qty === 0 ? (
           <button
             type="button"
-            onClick={() => setQty(product.id, qty - 1)}
-            aria-label={qty === 1 ? `Remove ${product.name}` : `Remove one ${product.name}`}
-            className={`${stepButton} bg-surface text-terracotta-dark hover:bg-white`}
+            onClick={() => setQty(product.id, 1)}
+            className="rounded-full border-2 border-terracotta px-3 py-1.5 text-sm font-semibold text-terracotta-dark transition hover:bg-terracotta hover:text-white focus-visible:ring-2 focus-visible:ring-ocean focus-visible:ring-offset-2 focus-visible:outline-none"
           >
-            −
+            Add<span className="sr-only"> {product.name}</span>
           </button>
-          <output aria-live="polite" className="text-sm font-semibold">
-            {qty}
-            <span className="sr-only"> {product.name} in your setup</span>
-          </output>
-          <button
-            type="button"
-            onClick={() => setQty(product.id, qty + 1)}
-            disabled={qty >= max}
-            aria-label={`Add one more ${product.name}`}
-            className={`${stepButton} bg-terracotta text-white hover:bg-terracotta-dark`}
-          >
-            +
-          </button>
-        </div>
-      )}
-      {qty > 0 && qty >= max && max > 1 && (
-        <p className="text-xs text-muted">
-          Max {max}
-          {limitedByDesk && deskId ? ` on the ${getProduct(deskId)?.name}` : ""}
-        </p>
-      )}
-      <ProductDetails product={product} />
+        ) : (
+          <div className="flex items-center justify-between rounded-full bg-sand p-0.5">
+            <button
+              type="button"
+              onClick={() => setQty(product.id, qty - 1)}
+              aria-label={qty === 1 ? `Remove ${product.name}` : `Remove one ${product.name}`}
+              className={`${stepButton} bg-surface text-terracotta-dark hover:bg-white`}
+            >
+              −
+            </button>
+            <output aria-live="polite" className="text-sm font-semibold">
+              {qty}
+              <span className="sr-only"> {product.name} in your setup</span>
+            </output>
+            <button
+              type="button"
+              onClick={() => setQty(product.id, qty + 1)}
+              disabled={qty >= max}
+              aria-label={`Add one more ${product.name}`}
+              className={`${stepButton} bg-terracotta text-white hover:bg-terracotta-dark`}
+            >
+              +
+            </button>
+          </div>
+        )}
+        {qty > 0 && qty >= max && max > 1 && (
+          <p className="text-xs text-muted">
+            Max {max}
+            {limitedByDesk && deskId ? ` on the ${getProduct(deskId)?.name}` : ""}
+          </p>
+        )}
+        <ProductDetails product={product} />
+      </div>
     </div>
   );
 }
